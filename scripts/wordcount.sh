@@ -12,6 +12,16 @@ scene_wc() {
   pandoc "$file" --from markdown --to plain --wrap=none | wc -w | tr -d ' '
 }
 
+update_frontmatter_wc() {
+  local file="$1"
+  local count="$2"
+  awk -v count="$count" '
+    /^---$/ { fmcount++ }
+    fmcount == 1 && /^wc:/ { print "wc: " count; next }
+    { print }
+  ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+}
+
 echo "=== SCENE WORD COUNTS ==="
 declare -A CHAPTER_TOTALS
 declare -A ACT_TOTALS
@@ -19,6 +29,7 @@ BOOK_TOTAL=0
 
 for f in $SCENE_FILES; do
   wc=$(scene_wc "$f")
+  update_frontmatter_wc "$f" "$wc"
   echo "$f: $wc"
 
   # Extract act and chapter from path
