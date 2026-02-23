@@ -56,3 +56,7 @@ done | sort
 echo
 echo "=== BOOK TOTAL ==="
 echo "$BOOK_TOTAL"
+
+# Update book.yml
+sed "s/^wordcount: .*/wordcount: $BOOK_TOTAL/" book.yml > book.yml.tmp && mv book.yml.tmp book.yml
+echo "Updated book.yml with wordcount: $BOOK_TOTAL"
